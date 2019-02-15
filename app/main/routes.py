@@ -20,6 +20,12 @@ LOCATION_CATEGORIES = {
     }
 }
 
+ITEM_TYPES = {
+    "material" : CoaSummaryView.material,
+    "category" : CoaSummaryView.category,
+    "item_name": CoaSummaryView.item_name
+}
+
 def get_location_category_column(location_category):
     location_category = location_category if location_category in LOCATION_CATEGORIES else "site"
     return LOCATION_CATEGORIES[location_category]["column"]
@@ -226,3 +232,30 @@ def valid_date_range():
         result_dict["firstDate"] = first_date.strftime('%Y-%m-%d')
         result_dict["lastDate"] = last_date.strftime('%Y-%m-%d')
     return jsonify(validDateRange=result_dict)
+
+@main.route('/itemslist')
+def items_list():
+    """
+    Given the name of the type of items wanted returns the list of item names.
+    Valid values for itemType are category, material and item_name
+    """
+    item_type = request.args.get('itemType', default = 'category', type = str)
+    
+    column = (ITEM_TYPES[item_type] 
+              if item_type in ITEM_TYPES else CoaSummaryView.category)
+
+    db_result = CoaSummaryView.query \
+                    .filter() \
+                    .with_entities(column) \
+                    .distinct()  \
+                    .all()
+   
+    json_list = list()
+    for row in db_result:
+        if len(row) == 1:
+            #remove the null value
+            if row[0]:
+                json_list.append(row[0])
+
+    return jsonify(items_list=json_list)
+
