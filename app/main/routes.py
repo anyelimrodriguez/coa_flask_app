@@ -244,7 +244,6 @@ def items_list():
     column = (ITEM_TYPES[item_type] 
               if item_type in ITEM_TYPES else CoaSummaryView.category)
 
-    print('column',column)
     db_result = CoaSummaryView.query \
                     .filter() \
                     .with_entities(column) \
