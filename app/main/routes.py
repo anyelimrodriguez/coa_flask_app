@@ -235,6 +235,45 @@ def valid_date_range():
         result_dict["lastDate"] = last_date.strftime('%Y-%m-%d')
     return jsonify(validDateRange=result_dict)
 
+@main.route('/validmaterials')
+def valid_materials():
+    #set the arguments or the validmaterials request
+    location_category = request.args.get('locationCategory', default = None, type = str)
+    location_name = request.args.get('locationName', default = None, type = str)
+
+    location_query=True
+    if location_category is not None and location_name is not None:
+        location_category_column = get_location_category_column(location_category)
+        location_query = location_category_column == location_name
+    item_query=CoaSummaryView.quantity > 0
+
+    db_result = CoaSummaryView.query \
+                    .filter(location_query, item_query) \
+                    .with_entities( \
+                        CoaSummaryView.material, \
+                        CoaSummaryView.category, \
+                        CoaSummaryView.item_name, \
+                        db.func.sum(CoaSummaryView.quantity).label("quantity_sum")) \
+                    .group_by(CoaSummaryView.item_name) \
+                    .order_by(CoaSummaryView.material, CoaSummaryView.category, CoaSummaryView.item_name) \
+                    .distinct() \
+                    .all()
+    
+    material_dict = {}
+    for row in db_result:
+        material = row[0]
+        category = row[1]
+        item_name = category if not row[2] else row[2]
+        quantity = row[3]
+        if material not in material_dict:
+            material_dict[material] = {}
+        if category not in material_dict[material]:
+            material_dict[material][category] = {}
+        if item_name not in material_dict[material][category]:
+            material_dict[material][category][item_name] = quantity
+
+    return jsonify(materials=material_dict)
+
 @main.route('/itemslist')
 def items_list():
     """
