@@ -272,7 +272,28 @@ def valid_materials():
         if item_name not in material_dict[material][category]:
             material_dict[material][category][item_name] = quantity
 
-    return jsonify(materials=material_dict)
+    materials = []
+    for material in material_dict.keys():
+        material_obj = {
+            "material": material,
+            "categories": []
+        }
+        category_dict = material_dict[material]
+        for category in category_dict.keys():
+            category_obj = {
+                "category": category,
+                "item_names": []
+            }
+            item_dict = category_dict[category]
+            for item in item_dict.keys():
+                item_obj = {
+                    "item_name": item
+                }
+                category_obj["item_names"].append(item_obj)
+            material_obj["categories"].append(category_obj)
+        materials.append(material_obj)
+
+    return jsonify(materials=materials)
 
 @main.route('/itemslist')
 def items_list():
@@ -299,4 +320,3 @@ def items_list():
                 json_list.append(row[0])
 
     return jsonify(items_list=json_list)
-
