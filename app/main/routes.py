@@ -157,6 +157,8 @@ def breakdown():
     location_name = request.args.get('locationName', default = 'Union Beach', type = str)
     start_date_str = request.args.get('startDate', default = '2016-1-1', type = str)
     end_date_str = request.args.get('endDate', default = '2018-12-31', type = str)
+
+    location_category_column = get_location_category_column(location_category)
     
     # convert date strings to dates
     start_date = parse_date_string(start_date_str)
@@ -164,7 +166,7 @@ def breakdown():
 
     result = CoaSummaryView.query \
         .filter(
-            CoaSummaryView.site_name == location_name,
+            location_category_column == location_name,
             CoaSummaryView.volunteer_date >= start_date,
             CoaSummaryView.volunteer_date <= end_date) \
         .with_entities(
