@@ -239,12 +239,11 @@ def valid_date_range():
 def valid_materials():
     #set the arguments or the validmaterials request
     location_category = request.args.get('locationCategory', default = None, type = str)
-    location_name = request.args.get('locationName', default = None, type = str)
-
-    location_query=True
-    if location_category is not None and location_name is not None:
-        location_category_column = get_location_category_column(location_category)
-        location_query = location_category_column == location_name
+    locations = request.args.getlist('locations[]', type = str)
+    
+    location_category_column = get_location_category_column(location_category)
+    location_query=True if not locations or not location_category else location_category_column.in_(locations)
+    
     item_query=CoaSummaryView.quantity > 0
 
     db_result = CoaSummaryView.query \
