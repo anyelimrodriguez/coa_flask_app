@@ -319,3 +319,56 @@ def items_list():
                 json_list.append(row[0])
 
     return jsonify(items_list=json_list)
+
+@main.route('/trends')
+def trends():
+    location_category = request.args.get('locationCategory', default = None, type = str)
+    locations = request.args.getlist('locations[]', type = str)
+    
+    location_category_column = get_location_category_column(location_category)
+    location_query=True if not locations or not location_category else location_category_column.in_(locations)
+
+    item_class = request.args.get('itemClass', default = None, type = str)
+    item_types = request.args.getlist('itemTypes[]', type=str)
+
+    item_class_column = (ITEM_TYPES[item_class] 
+              if item_class in ITEM_TYPES else CoaSummaryView.material)
+    item_query = True if not item_types or not item_class else item_class_column.in_(item_types)
+    
+    db_result = CoaSummaryView.query \
+                    .filter(location_query, item_query) \
+                    .with_entities( \
+                        location_category_column, \
+                        CoaSummaryView.volunteer_date, \
+                        CoaSummaryView.quantity) \
+                    .order_by(CoaSummaryView.volunteer_date) \
+                    .all()
+
+    location_dict = {}
+    for row in db_result:
+        location = row[0]
+        volunteer_date = row[1]
+        quantity = row[2]
+        year = volunteer_date.year
+        if location not in location_dict:
+            location_dict[location] = {}
+        if year not in location_dict[location]:
+            location_dict[location][year] = 0
+        location_dict[location][year] = location_dict[location][year] + quantity
+
+    locations = []
+    for location in location_dict.keys():
+        location_obj = {
+            "location": location,
+            "data": []
+        }
+        year_dict = location_dict[location]
+        for year in year_dict.keys():
+            year_obj = {
+                "x": year,
+                "y": int(year_dict[year])
+            }
+            location_obj["data"].append(year_obj)
+        locations.append(location_obj)
+    
+    return jsonify(data=locations)
