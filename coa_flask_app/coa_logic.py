@@ -1,9 +1,10 @@
-from flask import render_template, request, jsonify
-from . import main
-from ..models import Item, CoaSummaryView
-import datetime
-from .. import db
 from collections import OrderedDict
+import datetime
+from typing import List, Tuple
+
+from coa_flask_app import db
+from coa_flask_app.models import CoaSummaryView, Item
+
 
 LOCATION_CATEGORIES = {
     "site": {
@@ -21,56 +22,47 @@ LOCATION_CATEGORIES = {
 }
 
 ITEM_TYPES = {
-    "material" : CoaSummaryView.material,
-    "category" : CoaSummaryView.category,
+    "material": CoaSummaryView.material,
+    "category": CoaSummaryView.category,
     "item_name": CoaSummaryView.item_name
 }
+
 
 def get_location_category_column(location_category):
     location_category = location_category if location_category in LOCATION_CATEGORIES else "site"
     return LOCATION_CATEGORIES[location_category]["column"]
 
-@main.route('/')
-def index():
-    #for row in CoaSummaryView.query.all():
-    #    print(row.site_name)
-    return render_template('index.html')
 
-@main.route('/sitecategoriesbreakdown')
-def site_details():
-    location_category = request.args.get('locationCategory', 
-                                          default = 'site', type = str)
-    site_id = request.args.get('siteId',default = 0, type = int)
-    location_name = request.args.get('locationName',
-                                 default = 'Union Beach', type = str)
+def site_details(location_category, site_id, location_name):
     site_name = 'Union Beach'
-    start_date = datetime.datetime(2016, 1 ,1)
+    start_date = datetime.datetime(2016, 1, 1)
     end_date = datetime.datetime(2016, 12, 31)
-    print (site_name)
-    result = CoaSummaryView.query.filter(CoaSummaryView.site_name == site_name, \
-                                           CoaSummaryView.volunteer_date > start_date,
-                                           CoaSummaryView.volunteer_date < end_date). \
-                                           with_entities(CoaSummaryView.material, \
-                                           db.func.sum(CoaSummaryView.quantity)). \
-                                           group_by(CoaSummaryView.material)
+    print(site_name)
+    result = CoaSummaryView.query.filter(CoaSummaryView.site_name == site_name,
+                                         CoaSummaryView.volunteer_date > start_date,
+                                         CoaSummaryView.volunteer_date < end_date). \
+        with_entities(CoaSummaryView.material,
+                      db.func.sum(CoaSummaryView.quantity)). \
+        group_by(CoaSummaryView.material)
     for row in result:
-       print(row)
-    return jsonify(result)
+        print(row)
 
-@main.route('/getsitesdropdownlist')
+    return result
+
+
 def site_list():
     sql_result = CoaSummaryView.query.filter().\
-                                      with_entities(CoaSummaryView.site_name).\
-                                      group_by(CoaSummaryView.site_name).\
-                                      order_by(CoaSummaryView.site_name).\
-                                      all()
+        with_entities(CoaSummaryView.site_name).\
+        group_by(CoaSummaryView.site_name).\
+        order_by(CoaSummaryView.site_name).\
+        all()
     json_list = list()
     for row in sql_result:
         if len(row) == 1:
             print(row)
             json_list.append(row[0])
 
-    return jsonify(site_names=json_list)
+    return json_list
 
 
 def create_location_dict(category, label, location_sql_result):
@@ -81,33 +73,28 @@ def create_location_dict(category, label, location_sql_result):
     location_dict['locationLabel'] = label
     location_dict['locationNames'] = location_list
     return location_dict
- 
-@main.route('/locations')
+
+
 def all_locations_list():
     result_list = list()
 
     for category, category_info in LOCATION_CATEGORIES.items():
         sql_result = CoaSummaryView.query.filter().\
-                            with_entities(category_info["column"]).\
-                            group_by(category_info["column"]).\
-                            order_by(category_info["column"]).\
-                            all()
-        result_list.append(create_location_dict(category, category_info["label"], sql_result))
+            with_entities(category_info["column"]).\
+            group_by(category_info["column"]).\
+            order_by(category_info["column"]).\
+            all()
+        result_list.append(create_location_dict(
+            category, category_info["label"], sql_result))
 
-    return jsonify(locations=result_list)
+    return result_list
 
 
 def parse_date_string(date_str):
     return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
 
-@main.route('/dirtydozen')
-def dirty_dozens():
-    # set the values allowed for the location category
-    location_category = request.args.get('locationCategory', default = 'site', type = str)
-    location_name = request.args.get('locationName', default = 'Union Beach', type = str)
-    start_date_str = request.args.get('startDate', default = '2016-1-1', type = str)
-    end_date_str = request.args.get('endDate', default = '2018-12-31', type = str)
-    
+
+def dirty_dozens(location_category, location_name, start_date_str, end_date_str):
     location_category_column = get_location_category_column(location_category)
 
     # convert date strings to dates
@@ -140,26 +127,21 @@ def dirty_dozens():
     json_list = []
     for row in result:
         json_list.append(dict(
-            itemName=row[0], 
+            itemName=row[0],
             itemId=row[1],
             categoryName=row[2],
             materialName=row[3],
-            count=row[4], 
-            percentage=(0 if total_items == None else (row[4] / total_items) * 100)
+            count=row[4],
+            percentage=(0 if total_items == None else (
+                row[4] / total_items) * 100)
         ))
 
-    return jsonify(dirtydozen=json_list)
+    return json_list
 
-@main.route('/breakdown')
-def breakdown():
-    # set the values allowed for the location category
-    location_category = request.args.get('locationCategory', default = 'site', type = str)
-    location_name = request.args.get('locationName', default = 'Union Beach', type = str)
-    start_date_str = request.args.get('startDate', default = '2016-1-1', type = str)
-    end_date_str = request.args.get('endDate', default = '2018-12-31', type = str)
 
+def breakdown(location_category, location_name, start_date_str, end_date_str):
     location_category_column = get_location_category_column(location_category)
-    
+
     # convert date strings to dates
     start_date = parse_date_string(start_date_str)
     end_date = parse_date_string(end_date_str)
@@ -170,7 +152,7 @@ def breakdown():
             CoaSummaryView.volunteer_date >= start_date,
             CoaSummaryView.volunteer_date <= end_date) \
         .with_entities(
-            CoaSummaryView.item_name, 
+            CoaSummaryView.item_name,
             CoaSummaryView.item_id,
             CoaSummaryView.category,
             CoaSummaryView.material,
@@ -189,75 +171,73 @@ def breakdown():
         # Check if this material has already been added
         materialIdx = get_child(materialName, sunburst_data["children"])
         if materialIdx < 0:
-            sunburst_data["children"].append({"name": materialName, "children": []})
+            sunburst_data["children"].append(
+                {"name": materialName, "children": []})
             materialIdx = len(sunburst_data["children"]) - 1
-        
+
         # Check if this category has already been added
         material = sunburst_data["children"][materialIdx]
         categoryIdx = get_child(categoryName, material["children"])
         if categoryIdx < 0:
-            sunburst_data["children"][materialIdx]["children"].append({"name": categoryName, "children": []})
+            sunburst_data["children"][materialIdx]["children"].append(
+                {"name": categoryName, "children": []})
             categoryIdx = len(material["children"]) - 1
 
-        material["children"][categoryIdx]["children"].append({"name": itemName, "count": count })
+        material["children"][categoryIdx]["children"].append(
+            {"name": itemName, "count": count})
 
-    return jsonify(data=sunburst_data)
+    return sunburst_data
+
 
 def get_child(name, children):
     i = 0
     for c in children:
         if c["name"] == name:
             return i
-        else: 
+        else:
             i = i + 1
 
     return -1
 
-@main.route('/validdaterange')
-def valid_date_range():
-    #set the arguments for the validdaterange request
-    location_category = request.args.get('locationCategory', default = 'site', type = str)
-    location_name = request.args.get('locationName', default = 'Union Beach', type = str)
-    
+
+def valid_date_range(location_category, location_name):
     location_category_column = get_location_category_column(location_category)
 
     db_result = CoaSummaryView.query \
-                    .filter(location_category_column == location_name) \
-                    .with_entities( \
-                        db.func.min(CoaSummaryView.volunteer_date), \
-                        db.func.max(CoaSummaryView.volunteer_date)) \
-                    .all()
-    
+        .filter(location_category_column == location_name) \
+        .with_entities(
+            db.func.min(CoaSummaryView.volunteer_date),
+            db.func.max(CoaSummaryView.volunteer_date)) \
+        .all()
+
     # db_result should have only one value
     result_dict = dict()
     for first_date, last_date in db_result:
         result_dict["firstDate"] = first_date.strftime('%Y-%m-%d')
         result_dict["lastDate"] = last_date.strftime('%Y-%m-%d')
-    return jsonify(validDateRange=result_dict)
 
-@main.route('/validmaterials')
-def valid_materials():
-    #set the arguments or the validmaterials request
-    location_category = request.args.get('locationCategory', default = None, type = str)
-    locations = request.args.getlist('locations[]', type = str)
-    
+    return result_dict
+
+
+def valid_materials(location_category, locations):
     location_category_column = get_location_category_column(location_category)
-    location_query=True if not locations or not location_category else location_category_column.in_(locations)
-    
-    item_query=CoaSummaryView.quantity > 0
+    location_query = True if not locations or not location_category else location_category_column.in_(
+        locations)
+
+    item_query = CoaSummaryView.quantity > 0
 
     db_result = CoaSummaryView.query \
-                    .filter(location_query, item_query) \
-                    .with_entities( \
-                        CoaSummaryView.material, \
-                        CoaSummaryView.category, \
-                        CoaSummaryView.item_name, \
-                        db.func.sum(CoaSummaryView.quantity).label("quantity_sum")) \
-                    .group_by(CoaSummaryView.item_name) \
-                    .order_by(CoaSummaryView.material, CoaSummaryView.category, CoaSummaryView.item_name) \
-                    .distinct() \
-                    .all()
-    
+        .filter(location_query, item_query) \
+        .with_entities(
+            CoaSummaryView.material,
+            CoaSummaryView.category,
+            CoaSummaryView.item_name,
+            db.func.sum(CoaSummaryView.quantity).label("quantity_sum")) \
+        .group_by(CoaSummaryView.item_name) \
+        .order_by(CoaSummaryView.material, CoaSummaryView.category, CoaSummaryView.item_name) \
+        .distinct() \
+        .all()
+
     material_dict = {}
     for row in db_result:
         material = row[0]
@@ -292,57 +272,54 @@ def valid_materials():
             material_obj["categories"].append(category_obj)
         materials.append(material_obj)
 
-    return jsonify(materials=materials)
+    return materials
 
-@main.route('/itemslist')
-def items_list():
+
+def items_list(item_type):
     """
     Given the name of the type of items wanted returns the list of item names.
     Valid values for itemType are category, material and item_name
     """
-    item_type = request.args.get('itemType', default = 'category', type = str)
-    
-    column = (ITEM_TYPES[item_type] 
+    column = (ITEM_TYPES[item_type]
               if item_type in ITEM_TYPES else CoaSummaryView.category)
 
     db_result = CoaSummaryView.query \
-                    .filter() \
-                    .with_entities(column) \
-                    .distinct()  \
-                    .all()
-   
+        .filter() \
+        .with_entities(column) \
+        .distinct()  \
+        .all()
+
     json_list = list()
     for row in db_result:
         if len(row) == 1:
-            #remove the null value
+            # remove the null value
             if row[0]:
                 json_list.append(row[0])
 
-    return jsonify(items_list=json_list)
+    return json_list
 
-@main.route('/trends')
-def trends():
-    location_category = request.args.get('locationCategory', default = None, type = str)
-    locations = request.args.getlist('locations[]', type = str)
-    
+
+def trends(location_category, locations):
     location_category_column = get_location_category_column(location_category)
-    location_query=True if not locations or not location_category else location_category_column.in_(locations)
+    location_query = True if not locations or not location_category else location_category_column.in_(
+        locations)
 
-    item_class = request.args.get('itemClass', default = None, type = str)
+    item_class = request.args.get('itemClass', default=None, type=str)
     item_types = request.args.getlist('itemTypes[]', type=str)
 
-    item_class_column = (ITEM_TYPES[item_class] 
-              if item_class in ITEM_TYPES else CoaSummaryView.material)
-    item_query = True if not item_types or not item_class else item_class_column.in_(item_types)
-    
+    item_class_column = (ITEM_TYPES[item_class]
+                         if item_class in ITEM_TYPES else CoaSummaryView.material)
+    item_query = True if not item_types or not item_class else item_class_column.in_(
+        item_types)
+
     db_result = CoaSummaryView.query \
-                    .filter(location_query, item_query) \
-                    .with_entities( \
-                        location_category_column, \
-                        CoaSummaryView.volunteer_date, \
-                        CoaSummaryView.quantity) \
-                    .order_by(CoaSummaryView.volunteer_date) \
-                    .all()
+        .filter(location_query, item_query) \
+        .with_entities(
+            location_category_column,
+            CoaSummaryView.volunteer_date,
+            CoaSummaryView.quantity) \
+        .order_by(CoaSummaryView.volunteer_date) \
+        .all()
 
     location_dict = {}
     for row in db_result:
@@ -370,5 +347,5 @@ def trends():
             }
             location_obj["data"].append(year_obj)
         locations.append(location_obj)
-    
-    return jsonify(data=locations)
+
+    return locations

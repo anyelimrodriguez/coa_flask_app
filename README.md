@@ -1,7 +1,8 @@
 # coa_flask_app
-The back-end RESTApis for the COA website
 
-## Getting Started (Windows/GitBash)
+The flask back-end REST APIs for the COA website.
+
+## Getting Started
 
 1. Install python3 
 2. Install flask: `pip install Flask`
