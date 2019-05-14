@@ -15,3 +15,5 @@ DB_DATABASE = os.environ['DB_DATABASE']
 DB_PORT = os.environ['DB_PORT']
 
 SQLALCHEMY_DATABASE_URI = f'{DB_TYPE}://{DB_USERNAME}:{DB_PASSWORD}@{DB_SERVER}:{DB_PORT}/{DB_DATABASE}'
+
+# TODO: Look into removing this

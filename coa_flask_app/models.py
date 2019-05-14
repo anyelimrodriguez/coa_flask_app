@@ -1,8 +1,10 @@
+# TODO: Look into removing this completely as well.
+
 """
 The models module is where sqlalchemy modesl are created.
 """
 
-from coa_flask_app import db
+import sqlalchemy as db
 
 
 class Item(db.Model):

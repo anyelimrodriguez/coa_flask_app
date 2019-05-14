@@ -1,9 +1,12 @@
-from collections import OrderedDict
-import datetime
-from typing import List, Tuple
+"""
+A module designed to hold the logic of the commands from flask.
+"""
 
-from coa_flask_app import db
-from coa_flask_app.models import CoaSummaryView, Item
+import datetime
+from typing import Any, Dict, List
+
+from coa_flask_app import db_accessor
+from coa_flask_app.models import CoaSummaryView
 
 
 LOCATION_CATEGORIES = {
@@ -31,23 +34,6 @@ ITEM_TYPES = {
 def get_location_category_column(location_category):
     location_category = location_category if location_category in LOCATION_CATEGORIES else "site"
     return LOCATION_CATEGORIES[location_category]["column"]
-
-
-def site_details(location_category, site_id, location_name):
-    site_name = 'Union Beach'
-    start_date = datetime.datetime(2016, 1, 1)
-    end_date = datetime.datetime(2016, 12, 31)
-    print(site_name)
-    result = CoaSummaryView.query.filter(CoaSummaryView.site_name == site_name,
-                                         CoaSummaryView.volunteer_date > start_date,
-                                         CoaSummaryView.volunteer_date < end_date). \
-        with_entities(CoaSummaryView.material,
-                      db.func.sum(CoaSummaryView.quantity)). \
-        group_by(CoaSummaryView.material)
-    for row in result:
-        print(row)
-
-    return result
 
 
 def site_list():
@@ -94,7 +80,7 @@ def parse_date_string(date_str):
     return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
 
 
-def dirty_dozens(location_category, location_name, start_date_str, end_date_str):
+def dirty_dozen(location_category, location_name, start_date_str, end_date_str):
     location_category_column = get_location_category_column(location_category)
 
     # convert date strings to dates
@@ -124,19 +110,15 @@ def dirty_dozens(location_category, location_name, start_date_str, end_date_str)
         .with_entities(db.func.sum(CoaSummaryView.quantity)) \
         .scalar()
 
-    json_list = []
-    for row in result:
-        json_list.append(dict(
-            itemName=row[0],
-            itemId=row[1],
-            categoryName=row[2],
-            materialName=row[3],
-            count=row[4],
-            percentage=(0 if total_items == None else (
-                row[4] / total_items) * 100)
-        ))
-
-    return json_list
+    return [{
+        'itemName': row[0],
+        'itemId': row[1],
+        'categoryName': row[2],
+        'materialName': row[3],
+        'count': row[4],
+        'percentage': 0 if total_items is None else row[4] / total_items * 100
+    }
+            for row in result]
 
 
 def breakdown(location_category, location_name, start_date_str, end_date_str):
@@ -189,13 +171,22 @@ def breakdown(location_category, location_name, start_date_str, end_date_str):
     return sunburst_data
 
 
-def get_child(name, children):
-    i = 0
-    for c in children:
-        if c["name"] == name:
-            return i
-        else:
-            i = i + 1
+def get_child(name: str, children: List[Dict[str, Any]]) -> int:
+    """
+    Returns the index of the first name of the child that matches the
+    name provided.
+
+    Args:
+        name: The name of the child.
+        children: The list of children.
+
+    Returns:
+        The index of the first child matching that name.
+        If none exist, return -1.
+    """
+    for index, child in enumerate(children):
+        if child["name"] == name:
+            return index
 
     return -1
 
@@ -217,135 +208,3 @@ def valid_date_range(location_category, location_name):
         result_dict["lastDate"] = last_date.strftime('%Y-%m-%d')
 
     return result_dict
-
-
-def valid_materials(location_category, locations):
-    location_category_column = get_location_category_column(location_category)
-    location_query = True if not locations or not location_category else location_category_column.in_(
-        locations)
-
-    item_query = CoaSummaryView.quantity > 0
-
-    db_result = CoaSummaryView.query \
-        .filter(location_query, item_query) \
-        .with_entities(
-            CoaSummaryView.material,
-            CoaSummaryView.category,
-            CoaSummaryView.item_name,
-            db.func.sum(CoaSummaryView.quantity).label("quantity_sum")) \
-        .group_by(CoaSummaryView.item_name) \
-        .order_by(CoaSummaryView.material, CoaSummaryView.category, CoaSummaryView.item_name) \
-        .distinct() \
-        .all()
-
-    material_dict = {}
-    for row in db_result:
-        material = row[0]
-        category = row[1]
-        item_name = category if not row[2] else row[2]
-        quantity = row[3]
-        if material not in material_dict:
-            material_dict[material] = {}
-        if category not in material_dict[material]:
-            material_dict[material][category] = {}
-        if item_name not in material_dict[material][category]:
-            material_dict[material][category][item_name] = quantity
-
-    materials = []
-    for material in material_dict.keys():
-        material_obj = {
-            "material": material,
-            "categories": []
-        }
-        category_dict = material_dict[material]
-        for category in category_dict.keys():
-            category_obj = {
-                "category": category,
-                "item_names": []
-            }
-            item_dict = category_dict[category]
-            for item in item_dict.keys():
-                item_obj = {
-                    "item_name": item
-                }
-                category_obj["item_names"].append(item_obj)
-            material_obj["categories"].append(category_obj)
-        materials.append(material_obj)
-
-    return materials
-
-
-def items_list(item_type):
-    """
-    Given the name of the type of items wanted returns the list of item names.
-    Valid values for itemType are category, material and item_name
-    """
-    column = (ITEM_TYPES[item_type]
-              if item_type in ITEM_TYPES else CoaSummaryView.category)
-
-    db_result = CoaSummaryView.query \
-        .filter() \
-        .with_entities(column) \
-        .distinct()  \
-        .all()
-
-    json_list = list()
-    for row in db_result:
-        if len(row) == 1:
-            # remove the null value
-            if row[0]:
-                json_list.append(row[0])
-
-    return json_list
-
-
-def trends(location_category, locations):
-    location_category_column = get_location_category_column(location_category)
-    location_query = True if not locations or not location_category else location_category_column.in_(
-        locations)
-
-    item_class = request.args.get('itemClass', default=None, type=str)
-    item_types = request.args.getlist('itemTypes[]', type=str)
-
-    item_class_column = (ITEM_TYPES[item_class]
-                         if item_class in ITEM_TYPES else CoaSummaryView.material)
-    item_query = True if not item_types or not item_class else item_class_column.in_(
-        item_types)
-
-    db_result = CoaSummaryView.query \
-        .filter(location_query, item_query) \
-        .with_entities(
-            location_category_column,
-            CoaSummaryView.volunteer_date,
-            CoaSummaryView.quantity) \
-        .order_by(CoaSummaryView.volunteer_date) \
-        .all()
-
-    location_dict = {}
-    for row in db_result:
-        location = row[0]
-        volunteer_date = row[1]
-        quantity = row[2]
-        year = volunteer_date.year
-        if location not in location_dict:
-            location_dict[location] = {}
-        if year not in location_dict[location]:
-            location_dict[location][year] = 0
-        location_dict[location][year] = location_dict[location][year] + quantity
-
-    locations = []
-    for location in location_dict.keys():
-        location_obj = {
-            "location": location,
-            "data": []
-        }
-        year_dict = location_dict[location]
-        for year in year_dict.keys():
-            year_obj = {
-                "x": year,
-                "y": int(year_dict[year])
-            }
-            location_obj["data"].append(year_obj)
-        locations.append(location_obj)
-
-    return locations
