@@ -208,3 +208,29 @@ def valid_date_range(location_category, location_name):
         result_dict["lastDate"] = last_date.strftime('%Y-%m-%d')
 
     return result_dict
+
+
+def locations_hierarchy() -> Dict[str, Dict[str, List[str]]]:
+    """
+    Returns all the locations in a hierarchy.
+    For example:
+        TODO <insert sample payload here>
+
+    Returns:
+        A json list of the locations hierarchy.
+    """
+    locations_tuples = db_accessor.Accessor().all_locations()
+    hierarchy = {}
+    for site, town, county in cursor.fetchall():
+        if county not in hierachy:
+            hierarchy[county] = {town: [site]}
+            continue
+        
+        h_county = hierarchy[county]
+        if town not in h_county:
+            h_count[town] = [site]
+            continue
+        
+        h_county[town].append(site)
+    
+    return hierarchy

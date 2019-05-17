@@ -141,3 +141,13 @@ def valid_date_range() -> JSON:
 
     return jsonify(validDateRange=coa_logic.valid_date_range(location_category,
                                                              location_name))
+
+@APP.route('/locationsHierarchy')
+def locations_hierarchy() -> JSON:
+    """
+    The locations hierarchy route returns the all the locations in a hierarchy.
+
+    Returns:
+        A json list of the locations hierarchy.
+    """
+    return jsonify(locationsHierarchy=coa_logic.locations_hierarchy())
