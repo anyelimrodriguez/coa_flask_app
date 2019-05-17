@@ -6,6 +6,7 @@ the application.
 """
 
 
+from datetime import datetime
 from typing import Any, Dict, List, Tuple, Union
 
 from flask import jsonify, request, url_for
@@ -23,9 +24,7 @@ from coa_flask_app import coa_logic
 JSON = Union[Dict[str, Any], List[Any]]
 
 APP = Flask(__name__)
-APP.config['JSON_SORT_KEYS'] = True
 CORS(APP)
-APP.config.from_pyfile('config.py')
 
 
 def routes() -> JSON:
@@ -86,9 +85,8 @@ def dirty_dozen() -> JSON:
     start_date = request.args.get('startDate',
                                   default='2016-1-1',
                                   type=str)
-    # FIXME: Why is that defaulted to some random day in the past?
     end_date = request.args.get('endDate',
-                                default='2018-12-31',
+                                default=datetime.now().strftime('%Y-%m-%d'),
                                 type=str)
 
     return jsonify(dirtydozen=coa_logic.dirty_dozen(location_category,
@@ -121,9 +119,8 @@ def breakdown() -> JSON:
     start_date = request.args.get('startDate',
                                   default='2016-1-1',
                                   type=str)
-    # FIXME: Why is that defaulted to some random day in the past?
     end_date = request.args.get('endDate',
-                                default='2018-12-31',
+                                default=datetime.now().strftime('%Y-%m-%d'),
                                 type=str)
 
     return jsonify(data=coa_logic.breakdown(location_category,
