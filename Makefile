@@ -17,7 +17,6 @@ help:
 
 .PHONY: install-deps
 install-deps:
-	rm -f Pipfile.lock
 	$(PYTHON) pipenv install --dev
 
 .PHONY: format

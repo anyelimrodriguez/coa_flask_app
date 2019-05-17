@@ -3,7 +3,7 @@ The module designed to contain all the database access logic.
 """
 
 import os
-from typing import  Dict, List
+from typing import List, Tuple
 
 import pymysql
 
@@ -36,19 +36,23 @@ class Accessor:
             cursor.execute(query)
             return [table_tuple[0] for table_tuple in cursor.fetchall()]
 
-    def all_locations() -> List[Tuple[str, str, str]]:
+    def all_locations(self) -> List[Tuple[str, str, str]]:
         """
         Returns a list of tuples comprising of the distinct sites,
         towns and counties.
 
-        For example: 
-            [[<site1>,<town1><count1>],...]
+        For example:
+        [
+            ("Atlantic City", "Atlantic City", "Atlantic"),
+            ("New Jersey Ave", "Atlantic City", "Atlantic"),
+            ...
+        ]
 
         Returns:
             A list of tuples.
         """
         query = """
-                SELECT 
+                SELECT
                     DISTINCT coa_summary_view.site_name,
                     coa_summary_view.town,
                     coa_summary_view.county
@@ -57,5 +61,3 @@ class Accessor:
         with self.connection as cursor:
             cursor.execute(query)
             return cursor.fetchall()
-
-            
