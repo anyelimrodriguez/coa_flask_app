@@ -51,8 +51,8 @@ def all_locations_list() -> JSON:
     return jsonify(locations=coa_logic.all_locations_list())
 
 
-#@APP.route('/dirtydozen')
-#def dirty_dozen() -> JSON:
+# @APP.route('/dirtydozen')
+# def dirty_dozen() -> JSON:
 #    """
 #    The dirty dozen route is designed to give the UI the data
 #    for a dirty dozen.
@@ -69,6 +69,8 @@ def all_locations_list() -> JSON:
 #    location_category = request.args.get('locationCategory',
 #                                         default='site',
 #                                         type=str)
+#    location_category = 'site_name' if location_category == 'site' else location_category
+#
 #    location_name = request.args.get('locationName',
 #                                     default='Union Beach',
 #                                     type=str)
@@ -84,43 +86,45 @@ def all_locations_list() -> JSON:
 #                                                    start_date,
 #                                                    end_date))
 #
-#
-#@APP.route('/breakdown')
-#def breakdown() -> JSON:
-#    """
-#    The breakdown route is designed to give the UI the data
-#    for a breakdown.
-#
-#    The app route itself contains:
-#        locationCategory - Default of site.
-#        locationName     - Default of the common location.
-#        startDate        - The old start date for historical reasons.
-#        endDate          - Now.
-#
-#    Returns:
-#        The breakdown for the requested category, name, and date range.
-#    """
-#    location_category = request.args.get('locationCategory',
-#                                         default='site',
-#                                         type=str)
-#    location_name = request.args.get('locationName',
-#                                     default='Union Beach',
-#                                     type=str)
-#    start_date = request.args.get('startDate',
-#                                  default='2016-1-1',
-#                                  type=str)
-#    end_date = request.args.get('endDate',
-#                                default=datetime.now().strftime('%Y-%m-%d'),
-#                                type=str)
-#
-#    return jsonify(data=coa_logic.breakdown(location_category,
-#                                            location_name,
-#                                            start_date,
-#                                            end_date))
-#
-#
-#@APP.route('/validdaterange')
-#def valid_date_range() -> JSON:
+
+@APP.route('/breakdown')
+def breakdown() -> JSON:
+    """
+    The breakdown route is designed to give the UI the data
+    for a breakdown.
+
+    The app route itself contains:
+        locationCategory - Default of site.
+        locationName     - Default of the common location.
+        startDate        - The old start date for historical reasons.
+        endDate          - Now.
+
+    Returns:
+        The breakdown for the requested category, name, and date range.
+    """
+    location_category = request.args.get('locationCategory',
+                                         default='site',
+                                         type=str)
+    location_category = 'site_name' if location_category == 'site' else location_category
+
+    location_name = request.args.get('locationName',
+                                     default='Union Beach',
+                                     type=str)
+    start_date = request.args.get('startDate',
+                                  default='2016-1-1',
+                                  type=str)
+    end_date = request.args.get('endDate',
+                                default=datetime.now().strftime('%Y-%m-%d'),
+                                type=str)
+
+    return jsonify(data=coa_logic.breakdown(location_category,
+                                            location_name,
+                                            start_date,
+                                            end_date))
+
+
+# @APP.route('/validdaterange')
+# def valid_date_range() -> JSON:
 #    """
 #    The valid date range route is designed to give the UI a valid date
 #    range.
@@ -135,6 +139,8 @@ def all_locations_list() -> JSON:
 #    location_category = request.args.get('locationCategory',
 #                                         default='site',
 #                                         type=str)
+#    location_category = 'site_name' if location_category == 'site' else location_category
+#
 #    location_name = request.args.get('locationName',
 #                                     default='Union Beach',
 #                                     type=str)
