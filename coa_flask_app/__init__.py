@@ -27,16 +27,6 @@ APP = Flask(__name__)
 CORS(APP)
 
 
-def routes() -> JSON:
-    """
-    A function to retrieve all routes installed in the app.
-
-    Returns:
-        A list of all the routes installed in the app.
-    """
-    return [str(rule) for rule in APP.url_map.iter_rules()]
-
-
 @APP.route('/')
 def index() -> JSON:
     """
@@ -47,7 +37,7 @@ def index() -> JSON:
     Returns:
         The json list of valid routes.
     """
-    return jsonify(routes())
+    return jsonify([str(rule) for rule in APP.url_map.iter_rules()])
 
 
 @APP.route('/locations')
@@ -68,10 +58,10 @@ def dirty_dozen() -> JSON:
     for a dirty dozen.
 
     The app route itself contains:
-        locationCategory
-        locationName
-        startDate
-        endDate
+        locationCategory - Default of site.
+        locationName     - Default of the common location.
+        startDate        - The old start date for historical reasons.
+        endDate          - Now.
 
     Returns:
         The dirty dozen for the requested category, name, and date range.
@@ -102,10 +92,10 @@ def breakdown() -> JSON:
     for a breakdown.
 
     The app route itself contains:
-        locationCategory
-        locationName
-        startDate
-        endDate
+        locationCategory - Default of site.
+        locationName     - Default of the common location.
+        startDate        - The old start date for historical reasons.
+        endDate          - Now.
 
     Returns:
         The breakdown for the requested category, name, and date range.
@@ -136,8 +126,8 @@ def valid_date_range() -> JSON:
     range.
 
     The app route itself contains:
-        locationCategory
-        locationName
+        locationCategory - Default of site.
+        locationName     - Default of the common location.
 
     Returns:
         The valid date range for the requested category and name.

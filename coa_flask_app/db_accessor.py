@@ -1,5 +1,5 @@
 """
-The module designed to contain all the databse access logic.
+The module designed to contain all the database access logic.
 """
 
 import os
@@ -10,7 +10,7 @@ import pymysql
 
 class Accessor:
     """
-    This class is designed to contain all the databse access logic.
+    This class is designed to contain all the database access logic.
     """
     def __init__(self) -> None:
         """
@@ -31,6 +31,16 @@ class Accessor:
         Returns:
             The name of all the tables.
         """
-        cursor = self.connection.cursor()
-        cursor.execute('SHOW TABLES')
-        return [i[0] for i in cursor.fetchall()]
+        query = 'SHOW TABLES'
+        with self.connection as cursor:
+            cursor.execute(query)
+            return [table_tuple[0] for table_tuple in cursor.fetchall()]
+
+    def all_locations(category: str) -> List[str]:
+        with self.connection as cursor:
+            query = """
+                    SELECT DISTINCT %s
+                    """
+            cursor.execute(query, category)
+            return [i[0] for i in cursor.fetchall()]
+

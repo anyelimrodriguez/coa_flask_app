@@ -1,5 +1,5 @@
 """
-A module designed to hold the logic of the commands from flask.
+A module designed to hold the buisness logic of the routes the Flask app serves.
 """
 
 import datetime
