@@ -40,17 +40,17 @@ def index() -> JSON:
     return jsonify([str(rule) for rule in APP.url_map.iter_rules()])
 
 
-#@APP.route('/locations')
-#def all_locations_list() -> JSON:
-#    """
-#    The locations route returns all the locations.
-#
-#    Returns:
-#        A json list of all the locations.
-#    """
-#    return jsonify(locations=coa_logic.all_locations_list())
-#
-#
+@APP.route('/locations')
+def all_locations_list() -> JSON:
+    """
+    The locations route returns all the locations.
+
+    Returns:
+        A json list of all the locations.
+    """
+    return jsonify(locations=coa_logic.all_locations_list())
+
+
 #@APP.route('/dirtydozen')
 #def dirty_dozen() -> JSON:
 #    """

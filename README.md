@@ -12,7 +12,13 @@ The flask back-end REST APIs for the COA website.
 4. Start server
     - `make run`
 
-To test that the flask app is running and properly connected to the database,
-use the curl command or access the local server through a browser.
+## Testing
 
-EX: `curl http://127.0.0.1:5000/locations` or open `http://127.0.0.1:5000/locations`
+To test that the flask app is running and properly connected to the database,
+use the curl command.
+
+- `curl localhost:5000/locations`
+
+Or to hit the deployed instance.
+
+- `curl http://coa-flask-app-dev.us-east-1.elasticbeanstalk.com/locations`

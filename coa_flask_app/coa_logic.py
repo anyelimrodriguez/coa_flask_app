@@ -2,13 +2,12 @@
 A module designed to hold the buisness logic of the routes the Flask app serves.
 """
 
-import datetime
+# import datetime
 from typing import Any, Dict, List
 
 from coa_flask_app import db_accessor
-#from coa_flask_app.models import CoaSummaryView
-#
-#
+
+
 #LOCATION_CATEGORIES = {
 #    "site": {
 #        "label": "Site",
@@ -49,33 +48,49 @@ from coa_flask_app import db_accessor
 #            json_list.append(row[0])
 #
 #    return json_list
-#
-#
-#def create_location_dict(category, label, location_sql_result):
-#    location_list = list(filter(lambda item: item[0], location_sql_result))
-#    location_list = [x[0] for x in location_list]
-#    location_dict = {}
-#    location_dict['locationCategory'] = category
-#    location_dict['locationLabel'] = label
-#    location_dict['locationNames'] = location_list
-#    return location_dict
-#
-#
-#def all_locations_list():
-#    result_list = list()
-#
-#    for category, category_info in LOCATION_CATEGORIES.items():
-#        sql_result = CoaSummaryView.query.filter().\
-#            with_entities(category_info["column"]).\
-#            group_by(category_info["column"]).\
-#            order_by(category_info["column"]).\
-#            all()
-#        result_list.append(create_location_dict(
-#            category, category_info["label"], sql_result))
-#
-#    return result_list
-#
-#
+
+
+def all_locations_list() -> List[Dict[str, Any]]:
+    """
+    Returns all the locations by category.
+
+    NOTICE: To be deprecated by the locations_hierarchy function.
+
+    For example:
+    [{
+      "locationCategory": "site",
+      "locationLabel": "Site",
+      "locationNames": [
+        "14 Ave ",
+        "14th & 15th Ave",
+        ...
+      ]},
+      ...
+    ]
+
+    Returns:
+        A json list of the locations by category.
+    """
+    locations_tuples = db_accessor.Accessor().all_locations()
+    names = 'locationNames'
+    site_data = {
+        'locationCategory': 'site',
+        'locationLabel': 'Site',
+        names: sorted({i[0] for i in locations_tuples})
+    }
+    town_data = {
+        'locationCategory': 'town',
+        'locationLabel': 'Town',
+        names: sorted({i[1] for i in locations_tuples})
+    }
+    county_data = {
+        'locationCategory': 'county',
+        'locationLabel': 'County',
+        names: sorted({i[2] for i in locations_tuples})
+    }
+    return [site_data, town_data, county_data]
+
+
 #def parse_date_string(date_str):
 #    return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
 #
@@ -231,7 +246,7 @@ def locations_hierarchy() -> Dict[str, Dict[str, List[str]]]:
         A json list of the locations hierarchy.
     """
     locations_tuples = db_accessor.Accessor().all_locations()
-    hierarchy = {}
+    hierarchy: Dict[str, Dict[str, List[str]]] = {}
     for site, town, county in locations_tuples:
         if county not in hierarchy:
             hierarchy[county] = {town: [site]}
