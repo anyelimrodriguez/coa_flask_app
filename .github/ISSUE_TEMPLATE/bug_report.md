@@ -7,7 +7,9 @@ assignees: ''
 
 ---
 
+<!--
 Please be patient, this is for the best. Do the checklist before filing an issue:
+-->
 
 - [ ] Is this something you can fix within your current coding session, lets not add unneeded bureaucracy.  Send a pull request! Bug fixes and documentation fixes are welcome.
 - [ ] Do you have a problem installing the dependencies, please use stack overflow for that or ask us don't leave an issue.
@@ -15,11 +17,14 @@ Please be patient, this is for the best. Do the checklist before filing an issue
 - [ ] Have an idea for a feature? Post using a feature request template, we did spend time making these templates, please respect them.
 
 
-**Describe the bug**
+## Describe the bug
 
-A clear and concise description of what the bug is.
+<!--
+A clear and concise description of what the bug is and what you were
+expecting to happen.
+-->
 
-**To Reproduce**
+## Steps to Reproduce
 
 Steps to reproduce the behavior:
 
@@ -28,10 +33,8 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+## Possible Fix
 
-A clear and concise description of what you expected to happen.
-
-**Additional context**
-
-Please delete this section if you don't use it.
+<!--
+An optional section, please delete this section if you don't use it.
+-->
