@@ -2,8 +2,9 @@
 The module designed to contain all the database access logic.
 """
 
+import datetime
 import os
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import pymysql
 
@@ -107,3 +108,33 @@ class Accessor:
                                    end_date,
                                    location_name))
             return cursor.fetchall()
+
+
+    def date_range(self,
+                   location_category: str,
+                   location_name: str) -> Optional[Tuple[datetime.date,
+                                                         datetime.date]]:
+        """
+        Returns the date range for a location.
+
+        Args:
+            location_category: The category of location, site, town, or county.
+            location_name: The name of the location.
+
+         Returns:
+            The date range.
+         """
+        if location_category not in {'site_name', 'town', 'county'}:
+            return None
+
+        query = """
+                 SELECT
+                    MIN(volunteer_date),
+                    MAX(volunteer_date)
+                 FROM coa_summary_view
+                 WHERE """ + location_category + """ = %s
+                 """
+        with self.connection as cursor:
+            cursor.execute(query, (location_name))
+            first, last = cursor.fetchall()[0]
+            return first, last

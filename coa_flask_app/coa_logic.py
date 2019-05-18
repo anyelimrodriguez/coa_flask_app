@@ -2,7 +2,6 @@
 A module designed to hold the buisness logic of the routes the Flask app serves.
 """
 
-# import datetime
 import heapq
 from typing import Any, Dict, List
 
@@ -150,22 +149,29 @@ def breakdown(location_category: str,
     return sunburst_data
 
 
-# def valid_date_range(location_category, location_name):
-#    db_result = CoaSummaryView.query \
-#        .filter(location_category_column == location_name) \
-#        .with_entities(
-#            db.func.min(CoaSummaryView.volunteer_date),
-#            db.func.max(CoaSummaryView.volunteer_date)) \
-#        .all()
-#
-#    # db_result should have only one value
-#    result_dict = dict()
-#    for first_date, last_date in db_result:
-#        result_dict["firstDate"] = first_date.strftime('%Y-%m-%d')
-#        result_dict["lastDate"] = last_date.strftime('%Y-%m-%d')
-#
-#    return result_dict
-#
+def valid_date_range(location_category: str,
+                     location_name: str) -> Dict[str, str]:
+    """
+    Returns the date range for a location.
+
+    Args:
+        location_category: The category of location, site, town, or county.
+        location_name: The name of the location.
+
+     Returns:
+        The date range.
+     """
+    result = db_accessor.Accessor().date_range(location_category,
+                                               location_name)
+    if result is None:
+        return {}
+
+    first, last = result
+    return {
+        'firstDate': first.strftime('%Y-%m-%d'),
+        'lastDate': last.strftime('%Y-%m-%d')
+    }
+
 
 def locations_hierarchy() -> Dict[str, Dict[str, List[str]]]:
     """

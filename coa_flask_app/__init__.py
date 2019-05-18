@@ -123,30 +123,30 @@ def breakdown() -> JSON:
                                             end_date))
 
 
-# @APP.route('/validdaterange')
-# def valid_date_range() -> JSON:
-#    """
-#    The valid date range route is designed to give the UI a valid date
-#    range.
-#
-#    The app route itself contains:
-#        locationCategory - Default of site.
-#        locationName     - Default of the common location.
-#
-#    Returns:
-#        The valid date range for the requested category and name.
-#    """
-#    location_category = request.args.get('locationCategory',
-#                                         default='site',
-#                                         type=str)
-#    location_category = 'site_name' if location_category == 'site' else location_category
-#
-#    location_name = request.args.get('locationName',
-#                                     default='Union Beach',
-#                                     type=str)
-#
-#    return jsonify(validDateRange=coa_logic.valid_date_range(location_category,
-#                                                             location_name))
+@APP.route('/validdaterange')
+def valid_date_range() -> JSON:
+    """
+    The valid date range route is designed to give the UI a valid date
+    range.
+
+    The app route itself contains:
+        locationCategory - Default of site.
+        locationName     - Default of the common location.
+
+    Returns:
+        The valid date range for the requested category and name.
+    """
+    location_category = request.args.get('locationCategory',
+                                         default='site',
+                                         type=str)
+    location_category = 'site_name' if location_category == 'site' else location_category
+
+    location_name = request.args.get('locationName',
+                                     default='Union Beach',
+                                     type=str)
+
+    return jsonify(validDateRange=coa_logic.valid_date_range(location_category,
+                                                             location_name))
 
 @APP.route('/locationsHierarchy')
 def locations_hierarchy() -> JSON:
