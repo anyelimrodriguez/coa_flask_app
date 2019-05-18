@@ -2,7 +2,7 @@
 name: Feature request
 about: Propose an enchantment for the project
 title: ''
-labels: ''
+labels: enhancement
 assignees: ''
 
 ---
