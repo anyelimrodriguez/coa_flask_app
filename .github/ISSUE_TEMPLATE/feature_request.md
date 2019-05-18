@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Propose an enchancement for the project
+about: Propose an enhancement for the project.
 title: ''
 labels: enhancement
 assignees: ''
