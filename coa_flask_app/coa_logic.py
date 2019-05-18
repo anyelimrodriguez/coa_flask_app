@@ -3,6 +3,7 @@ A module designed to hold the buisness logic of the routes the Flask app serves.
 """
 
 # import datetime
+import heapq
 from typing import Any, Dict, List
 
 from coa_flask_app import db_accessor
@@ -49,45 +50,40 @@ def all_locations_list() -> List[Dict[str, Any]]:
     return [site_data, town_data, county_data]
 
 
-# def dirty_dozen(location_category, location_name, start_date_str, end_date_str):
-#    location_category_column = get_location_category_column(location_category)
-#
-#    # convert date strings to dates
-#    start_date = parse_date_string(start_date_str)
-#    end_date = parse_date_string(end_date_str)
-#
-#    result = CoaSummaryView.query \
-#        .filter(
-#            location_category_column == location_name,
-#            CoaSummaryView.volunteer_date >= start_date,
-#            CoaSummaryView.volunteer_date <= end_date) \
-#        .with_entities(
-#            CoaSummaryView.item_name,
-#            CoaSummaryView.item_id,
-#            CoaSummaryView.category,
-#            CoaSummaryView.material,
-#            db.func.sum(CoaSummaryView.quantity).label("quantity_sum")) \
-#        .group_by(CoaSummaryView.item_name) \
-#        .order_by("quantity_sum desc") \
-#        .limit(12)
-#
-#    total_items = CoaSummaryView.query \
-#        .filter(
-#            location_category_column == location_name,
-#            CoaSummaryView.volunteer_date >= start_date,
-#            CoaSummaryView.volunteer_date <= end_date) \
-#        .with_entities(db.func.sum(CoaSummaryView.quantity)) \
-#        .scalar()
-#
-#    return [{
-#        'itemName': row[0],
-#        'itemId': row[1],
-#        'categoryName': row[2],
-#        'materialName': row[3],
-#        'count': row[4],
-#        'percentage': 0 if total_items is None else row[4] / total_items * 100
-#    }
-#            for row in result]
+def dirty_dozen(location_category: str,
+                location_name: str,
+                start_date: str,
+                end_date: str) -> List[Dict[str, Any]]:
+    """
+    Returns the top 12 items with the most debris along with its
+    associated meta data.
+
+    Args:
+        location_category: The category of location, site, town, or county.
+        location_name: The name of the location.
+        start_date: The start date for our query.
+        end_date: The end date for our query.
+
+    Returns:
+        A list of the dirty dozen.
+    """
+    result = db_accessor.Accessor().item_breakdown(location_category,
+                                                   location_name,
+                                                   start_date,
+                                                   end_date)
+    dozen = heapq.nlargest(12, result, key=lambda x: x[-1])
+    total = sum(count for *_, count in result)
+    wrap_for_response = lambda item_id, name, category, material, count, total: {
+        'itemName': name,
+        'itemId': item_id,
+        'categoryName': category,
+        'materialName': material,
+        'count': count,
+        'percentage': count / total * 100
+    }
+
+    return [wrap_for_response(item_id, name, category, material, count, total)
+            for item_id, name, category, material, count in dozen]
 
 
 def get_child(name: str, children: List[Dict[str, Any]]) -> int:
@@ -113,9 +109,18 @@ def get_child(name: str, children: List[Dict[str, Any]]) -> int:
 def breakdown(location_category: str,
               location_name: str,
               start_date: str,
-              end_date: str):
+              end_date: str) -> Dict[str, Any]:
     """
-    TODO: We are getting lazy on a Friday, make the docs happen guys / gals.
+    Returns the breakdown of the all the different types of debris.
+
+    Args:
+        location_category: The category of location, site, town, or county.
+        location_name: The name of the location.
+        start_date: The start date for our query.
+        end_date: The end date for our query.
+
+    Returns:
+        A json breakdown of the debris.
     """
     result = db_accessor.Accessor().item_breakdown(location_category,
                                                    location_name,
@@ -146,8 +151,6 @@ def breakdown(location_category: str,
 
 
 # def valid_date_range(location_category, location_name):
-#    location_category_column = get_location_category_column(location_category)
-#
 #    db_result = CoaSummaryView.query \
 #        .filter(location_category_column == location_name) \
 #        .with_entities(
