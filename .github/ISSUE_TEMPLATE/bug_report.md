@@ -11,10 +11,10 @@ assignees: ''
 Please be patient, this is for the best. Do the checklist before filing an issue:
 -->
 
-- [ ] Is this something you can fix within your current coding session, lets not add unneeded bureaucracy.  Send a pull request! Bug fixes and documentation fixes are welcome.
+- [ ] Is this something you can fix within your current coding session? Let's not add unneeded bureaucracy. Send a pull request! Bug fixes and documentation fixes are welcome.
 - [ ] Do you have a problem installing the dependencies? Please use Stack Overflow or ask us for that, don't leave an issue.
-- [ ] Looking for the information related to database access, please contact us directly, that is left out for security reasons.
-- [ ] Have an idea for a feature? Post using a feature request template, we did spend time making these templates, please respect them.
+- [ ] Looking for the information related to database access? It has been left out for security reasons, please contact us directly.
+- [ ] Have an idea for a feature? Post an issue using a feature request template. We spent time making these templates, please respect them.
 
 
 ## Describe the bug

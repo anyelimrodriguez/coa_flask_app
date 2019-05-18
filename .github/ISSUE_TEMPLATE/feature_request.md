@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Propose an enchantment for the project
+about: Propose an enchancement for the project
 title: ''
 labels: enhancement
 assignees: ''
@@ -11,8 +11,8 @@ assignees: ''
 Please be patient, this is for the best. Do the checklist before filing an issue:
 -->
 
-- [ ] Is this something you can add very quickly, lets not add unneeded bureaucracy.  Send a pull request! Enchantments, tests, and documentation improvements are welcome.
-- [ ] Are you sure this isn't a bug? Post using a feature request template, we did spend time making these templates, please respect them.
+- [ ] Is this something you can fix within your current coding session? Let's not add unneeded bureaucracy. Send a pull request! Feature enhancements, tests, and documentation improvements are welcome.
+- [ ] Are you sure this isn't a bug? If it is, post using a bug report template. We spent time making these templates, please respect them.
 
 ## Describe the Feature
 
