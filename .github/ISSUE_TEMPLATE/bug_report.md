@@ -13,7 +13,7 @@ Please be patient, this is for the best. Do the checklist before filing an issue
 
 - [ ] Is this something you can fix within your current coding session, lets not add unneeded bureaucracy.  Send a pull request! Bug fixes and documentation fixes are welcome.
 - [ ] Do you have a problem installing the dependencies, please use stack overflow for that or ask us don't leave an issue.
-- [] Looking for the information related to database access, please contact us directly, that is left out for security reasons.
+- [ ] Looking for the information related to database access, please contact us directly, that is left out for security reasons.
 - [ ] Have an idea for a feature? Post using a feature request template, we did spend time making these templates, please respect them.
 
 
