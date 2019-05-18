@@ -4,13 +4,18 @@ I'm really glad you're reading this because we are all about Skills Based Volunt
 
 ## Reporting Issues
 
-- If you think it's something you can do right now, then skip over this guide and get to the good stuff.
-- If you have a bug or a feature you want implemented, please use our templates to guide you through the process of reporting the issue.
+- If you think it's something you can do right now, then skip over this guide and
+  get to the good stuff.
+- If you have a bug or a feature you want implemented, please use our templates to
+  guide you through the process of reporting the issue.
 - We have templates to guide you through this process for bugs or feature requests.
 
 ## Getting Setup
 
-Check out the Makefile for the different libraries and tools that this project uses, and then take a shot at installing these dependencies and setting up the development environment for this project. Feel free to contact one of us if you need any help getting set up.
+Check out the Makefile for the different libraries and tools that this project uses,
+and then take a shot at installing these dependencies and setting up the development
+environment for this project.
+Feel free to contact one of us if you need any help getting set up.
 
 ## Formatting / Linting / Testing
 
