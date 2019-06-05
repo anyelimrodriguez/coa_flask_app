@@ -1,5 +1,7 @@
 # coa_flask_app
 
+[![Build Status](https://travis-ci.com/CleanOceanAction/coa_flask_app.svg?branch=master)](https://travis-ci.com/CleanOceanAction/coa_flask_app)
+
 The flask back-end REST APIs for the COA website.
 
 ## Getting Started
