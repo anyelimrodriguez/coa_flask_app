@@ -1,9 +1,29 @@
 dist: xenial
+
 language: python
+
 python:
   - "3.7"
+
 install:
   - pip install pipenv
+
 script:
   - make install-deps
   - make lint
+
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $ACCESSKEYID
+  secret_access_key:
+    secure: $SECRETACCESSKEY
+  region: "us-east-2"
+  app: "coa_flask_app"
+  env: "coa-flask-app-dev"
+  bucket_name: "We still some how don't know this yet?"
+  on:
+    branch: master
+
+after_deploy:
+  - make install-deps
+  - make run
