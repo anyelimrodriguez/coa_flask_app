@@ -157,3 +157,8 @@ def locations_hierarchy() -> JSON:
         A json list of the locations hierarchy.
     """
     return jsonify(locationsHierarchy=coa_logic.locations_hierarchy())
+
+
+@APP.route('/contribution')
+def contribution() -> JSON:
+    pass
