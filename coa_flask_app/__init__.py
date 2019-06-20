@@ -13,7 +13,7 @@ from flask import jsonify, request, url_for
 from flask import Flask
 from flask_cors import CORS
 
-from coa_flask_app import coa_logic
+from coa_flask_app import site
 
 
 # Recursive types not yet fully supported.
@@ -48,7 +48,7 @@ def all_locations_list() -> JSON:
     Returns:
         A json list of all the locations.
     """
-    return jsonify(locations=coa_logic.all_locations_list())
+    return jsonify(locations=site.all_locations_list())
 
 
 @APP.route('/dirtydozen')
@@ -81,10 +81,10 @@ def dirty_dozen() -> JSON:
                                 default=datetime.now().strftime('%Y-%m-%d'),
                                 type=str)
 
-    return jsonify(dirtydozen=coa_logic.dirty_dozen(location_category,
-                                                    location_name,
-                                                    start_date,
-                                                    end_date))
+    return jsonify(dirtydozen=site.dirty_dozen(location_category,
+                                               location_name,
+                                               start_date,
+                                               end_date))
 
 
 @APP.route('/breakdown')
@@ -117,10 +117,10 @@ def breakdown() -> JSON:
                                 default=datetime.now().strftime('%Y-%m-%d'),
                                 type=str)
 
-    return jsonify(data=coa_logic.breakdown(location_category,
-                                            location_name,
-                                            start_date,
-                                            end_date))
+    return jsonify(data=site.breakdown(location_category,
+                                       location_name,
+                                       start_date,
+                                       end_date))
 
 
 @APP.route('/validdaterange')
@@ -145,8 +145,9 @@ def valid_date_range() -> JSON:
                                      default='Union Beach',
                                      type=str)
 
-    return jsonify(validDateRange=coa_logic.valid_date_range(location_category,
-                                                             location_name))
+    return jsonify(validDateRange=site.valid_date_range(location_category,
+                                                        location_name))
+
 
 @APP.route('/locationsHierarchy')
 def locations_hierarchy() -> JSON:
@@ -156,9 +157,20 @@ def locations_hierarchy() -> JSON:
     Returns:
         A json list of the locations hierarchy.
     """
-    return jsonify(locationsHierarchy=coa_logic.locations_hierarchy())
+    return jsonify(locationsHierarchy=site.locations_hierarchy())
 
 
 @APP.route('/contribution')
 def contribution() -> JSON:
     pass
+
+
+@APP.route('/updatedb', methods=['POST'])
+def updatedb():
+    try:
+        query = contribution.create_query(request.form)
+        db.insert(query)
+        return 'Your records have been successfully saved!'
+    except:
+        return """Your records failed in saving to db.
+Please make sure you have all fields filled properly!"""
