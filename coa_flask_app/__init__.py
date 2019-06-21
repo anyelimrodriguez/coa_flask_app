@@ -159,17 +159,6 @@ def locations_hierarchy() -> JSON:
     return jsonify(locationsHierarchy=site.locations_hierarchy())
 
 
-@APP.route('/getSites')
-def get_sites() -> JSON:
-    """
-    The get sites route returns the all the sites for the input drop down.
-
-    Returns:
-        A json list of the sites.
-    """
-    return jsonify(getSites=contribution.get_sites())
-
-
 @APP.route('/getTLs')
 def get_tls() -> JSON:
     """
@@ -193,7 +182,7 @@ def get_trash_items() -> JSON:
     return jsonify(getTrashItems=contribution.get_trash_items())
 
 
-@APP.route('/saveUserInfo', methods='POST')
+@APP.route('/saveUserInfo', methods=['POST'])
 def save_user_info() -> JSON:
     # TODO: Why are we passing the values in like this,
     # why don't we do this smarter?
@@ -212,7 +201,7 @@ def save_user_info() -> JSON:
     return jsonify(saveUserInfo='The session was saved.')
 
 
-@APP.route('/insertContribution', methods='POST')
+@APP.route('/insertContribution', methods=['POST'])
 def insert_contribution() -> JSON:
     # FIXME
     contribution.insert_contribution(request.form)
