@@ -73,7 +73,7 @@ def get_trash_items() -> Dict[str, List[str]]:
     with Accessor() as db_handle:
         db_handle.execute(query)
         items = [(row[1],
-                  f'{row[2]}, {row[3]}[(row{0}]')
+                  f'{row[2]}, {row[3]}[{row[0]}]')
                  for row in db_handle.fetchall()]
 
     trash_items: Dict[str, List[str]] = {}
