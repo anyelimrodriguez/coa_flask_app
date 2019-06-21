@@ -9,11 +9,10 @@ the application.
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Union
 
-from flask import jsonify, request, url_for
-from flask import Flask
+from flask import jsonify, request, session, url_for, Flask
 from flask_cors import CORS
 
-from coa_flask_app import site
+from coa_flask_app import contribution, site
 
 
 # Recursive types not yet fully supported.
@@ -160,17 +159,61 @@ def locations_hierarchy() -> JSON:
     return jsonify(locationsHierarchy=site.locations_hierarchy())
 
 
-@APP.route('/contribution')
-def contribution() -> JSON:
-    pass
+@APP.route('/getSites')
+def get_sites() -> JSON:
+    """
+    The get sites route returns the all the sites for the input drop down.
+
+    Returns:
+        A json list of the sites.
+    """
+    return jsonify(getSites=contribution.get_sites())
 
 
-@APP.route('/updatedb', methods=['POST'])
-def updatedb():
-    try:
-        query = contribution.create_query(request.form)
-        db.insert(query)
-        return 'Your records have been successfully saved!'
-    except:
-        return """Your records failed in saving to db.
-Please make sure you have all fields filled properly!"""
+@APP.route('/getTLs')
+def get_tls() -> JSON:
+    """
+    The get tls route returns the all the TLs for the input drop down.
+
+    Returns:
+        A json list of the TLs.
+    """
+    return jsonify(getTLs=contribution.get_tls())
+
+
+@APP.route('/getTrashItems')
+def get_trash_items() -> JSON:
+    """
+    The get trash items route returns the all the trash items for the input
+    drop down.
+
+    Returns:
+        A json list of the trash items.
+    """
+    return jsonify(getTrashItems=contribution.get_trash_items())
+
+
+@APP.route('/saveUserInfo', methods='POST')
+def save_user_info() -> JSON:
+    # TODO: Why are we passing the values in like this,
+    # why don't we do this smarter?
+    userinfo = request.form.items()[0][0].split('||')
+    updater = userinfo[0]
+    eventcode = userinfo[1]
+    if not updater or not eventcode:
+        error = jsonify(error='Bad user input')
+        error.status_code = 400
+        return error
+
+    # TODO: Is sessions really the best way to do this when it comes to
+    # REACT. I feel like this might be best done with cookies instead.
+    session['updater'] = updater
+    session['eventcode'] = eventcode
+    return jsonify(saveUserInfo='The session was saved.')
+
+
+@APP.route('/insertContribution', methods='POST')
+def insert_contribution() -> JSON:
+    # FIXME
+    contribution.insert_contribution(request.form)
+    return jsonify(insertContribution='Contribution inserted.')
