@@ -204,5 +204,5 @@ def save_user_info() -> JSON:
 @APP.route('/insertContribution', methods=['POST'])
 def insert_contribution() -> JSON:
     # FIXME
-    contribution.insert_contribution(request.form)
+    contribution.insert_contribution(request.form.items()[0][0])
     return jsonify(insertContribution='Contribution inserted.')

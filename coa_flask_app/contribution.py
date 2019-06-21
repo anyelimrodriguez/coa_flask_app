@@ -59,21 +59,33 @@ def get_trash_items() -> Dict[str, List[str]]:
     return trash_items
 
 
-def insert_contribution(imd):
-    # TODO
+def insert_contribution(post_str: str) -> None:
+    # TODO: This should be changed as this is all tied to how the
+    # data was passed in the older version.
     team_query = """
-    INSERT INTO coa.team_info
-    (site_id,volunteer_date,team_captain,num_of_people,num_of_trashbags
-    ,trash_weight,walking_distance,updated_by)
-    VALUES
-    """
+                INSERT INTO coa.team_info
+                    (site_id,
+                     volunteer_date,
+                     team_captain,
+                     num_of_people,
+                     num_of_trashbags,
+                     trash_weight,
+                     walking_distance,
+                     updated_by)
+                VALUES
+                """
 
     volunteer_query = """
-    INSERT INTO coa.volunteer_info (team_id,item_id,quantity,brand,updated_by,event_code)
-    VALUES
-    """
+                      INSERT INTO coa.volunteer_info
+                        (team_id,
+                         item_id,
+                         quantity,
+                         brand,
+                         updated_by,
+                         event_code)
+                    VALUES
+                    """
 
-    post_str = imd.items()[0][0]
     team_info, volunteer_info = post_str.split('----')
 
     row = team_info.split('#')
@@ -101,4 +113,5 @@ def insert_contribution(imd):
             )
 
     query = "BEGIN; " + team_query + "; " + volunteer_query[:-1] + "; COMMIT;"
-    return query
+    with Accessor() as db_handle:
+        db_handle.execute(query)
