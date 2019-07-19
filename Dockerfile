@@ -6,5 +6,10 @@ RUN pip3 install pipenv
 RUN mkdir /app
 WORKDIR /app
 
+COPY . /app
+
 RUN make install-deps
-CMD make run
+
+EXPOSE 5000
+
+CMD ["make", "run"]
