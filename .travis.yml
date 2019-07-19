@@ -11,6 +11,7 @@ install:
 script:
   - make install-deps
   - make lint
+  - pipenv lock -r > requirements.txt
 
 deploy:
   provider: elasticbeanstalk
@@ -23,7 +24,3 @@ deploy:
   bucket_name: "elasticbeanstalk-us-east-1-495512916465"
   on:
     branch: master
-
-after_deploy:
-  - make install-deps
-  - make run
