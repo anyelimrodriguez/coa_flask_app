@@ -25,7 +25,7 @@ deploy:
     secure: $SECRETACCESSKEY
   region: "us-east-1"
   app: "coa_flask_app"
-  env: "coa-flask-app-dev"
+  env: "coa-flask-app-prod"
   bucket_name: "elasticbeanstalk-us-east-1-495512916465"
   on:
     branch: master
