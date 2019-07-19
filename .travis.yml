@@ -11,7 +11,12 @@ install:
 script:
   - make install-deps
   - make lint
-  - pipenv lock -r > requirements.txt
+  - docker build .
+
+sudo: required
+
+services:
+  - docker
 
 deploy:
   provider: elasticbeanstalk

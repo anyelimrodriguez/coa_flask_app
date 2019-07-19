@@ -4,20 +4,26 @@ SRC_FILES := $(shell find . -name "*.py")
 .PHONY: help
 help:
 	@echo "Usage:"
-	@echo "    help:         Prints this screen"
-	@echo "    install-deps: Installs dependencies in the internal venv."
-	@echo "    format:       Formats the code"
-	@echo "    fmt:          An alias for format"
-	@echo "    lint:         Lints the code"
-	@echo "    test:         Tests the code"
-	@echo "    run:          Run the flask application"
-	@echo "    clean:        Clean out temporaries."
-	@echo "    clean-full:   Clean out temporaries and the internal venv."
+	@echo "    help:                 Prints this screen"
+	@echo "    install-deps:         Installs dependencies in the internal venv"
+	@echo "    install-docker-deps:  Installs dependencies for docker"
+	@echo "    format:               Formats the code"
+	@echo "    fmt:                  An alias for format"
+	@echo "    lint:                 Lints the code"
+	@echo "    test:                 Tests the code"
+	@echo "    run:                  Run the flask application"
+	@echo "    clean:                Clean out temporaries"
+	@echo "    clean-full:           Clean out temporaries and the internal venv"
 	@echo ""
 
 .PHONY: install-deps
 install-deps:
 	$(PYTHON) pipenv install --dev
+
+
+.PHONY: install-docker-deps
+install-docker-deps:
+	$(PYTHON) pipenv install --system --deploy --ignore-pipfile
 
 .PHONY: format
 format:
