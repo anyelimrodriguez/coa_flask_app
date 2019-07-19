@@ -13,6 +13,11 @@ script:
   - make lint
   - pipenv lock -r > requirements.txt
 
+sudo: required
+
+services:
+  - docker
+
 deploy:
   provider: elasticbeanstalk
   access_key_id: $ACCESSKEYID
