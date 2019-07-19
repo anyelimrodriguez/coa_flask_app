@@ -12,10 +12,10 @@ from coa_flask_app.db_accessor import Accessor
 
 def get_tls() -> List[str]:
     """
-    Get all the TLs for the drop downs.
+    Get all the team leads for the drop downs.
 
     Returns:
-        The list of all the TLs.
+        The list of all the team leads.
     """
     query = """
             SELECT
@@ -52,6 +52,7 @@ def get_trash_items() -> Dict[str, List[str]]:
     trash_items: Dict[str, List[str]] = {}
     for material, item in items:
         if material in trash_items:
+            # This handles inserting in sorted order
             bisect.insort(trash_items[material], item)
         else:
             trash_items[material] = [item]
@@ -60,6 +61,9 @@ def get_trash_items() -> Dict[str, List[str]]:
 
 
 def insert_contribution(post_str: str) -> None:
+    """
+    Inserts into the database that a contribution was made.
+    """
     # TODO: This should be changed as this is all tied to how the
     # data was passed in the older version.
     team_query = """
@@ -112,6 +116,10 @@ def insert_contribution(post_str: str) -> None:
                 row[4]
             )
 
-    query = "BEGIN; " + team_query + "; " + volunteer_query[:-1] + "; COMMIT;"
+    query = f"""BEGIN;
+                {team_query}';
+                {volunteer_query[:-1]};
+                COMMIT;
+             """
     with Accessor() as db_handle:
         db_handle.execute(query)

@@ -162,10 +162,10 @@ def locations_hierarchy() -> JSON:
 @APP.route('/getTLs')
 def get_tls() -> JSON:
     """
-    The get tls route returns the all the TLs for the input drop down.
+    The get tls route returns the all the team leads for the input drop down.
 
     Returns:
-        A json list of the TLs.
+        A json list of the team leads.
     """
     return jsonify(getTLs=contribution.get_tls())
 
@@ -184,6 +184,12 @@ def get_trash_items() -> JSON:
 
 @APP.route('/saveUserInfo', methods=['POST'])
 def save_user_info() -> JSON:
+    """
+    A post request to store user info in the database.
+
+    Returns:
+        An empty JSON on success, and error response otherwise.
+    """
     # TODO: Why are we passing the values in like this,
     # why don't we do this smarter?
     userinfo = request.form.items()[0][0].split('||')
@@ -198,11 +204,16 @@ def save_user_info() -> JSON:
     # REACT. I feel like this might be best done with cookies instead.
     session['updater'] = updater
     session['eventcode'] = eventcode
-    return jsonify(saveUserInfo='The session was saved.')
+    return jsonify({})
 
 
 @APP.route('/insertContribution', methods=['POST'])
 def insert_contribution() -> JSON:
-    # FIXME
+    """
+    A post request to insert a contribution into the database.
+
+    Returns:
+        An empty JSON on success, and error response otherwise.
+    """
     contribution.insert_contribution(request.form.items()[0][0])
-    return jsonify(insertContribution='Contribution inserted.')
+    return jsonify({})

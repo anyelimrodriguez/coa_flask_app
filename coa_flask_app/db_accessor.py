@@ -28,7 +28,10 @@ class Accessor:
 
     def __enter__(self):
         """
-        The enter of the Accessor class.
+        The enter of the Accessor class for a context manager.
+
+        This is designed to be used as a context manager and returns
+        the underlying cursor.
 
         Returns:
             A cursor to execute queries on.
@@ -41,9 +44,10 @@ class Accessor:
                  ex_value,
                  traceback) -> None:
         """
-        The exit of the Accessor class.
+        The exit of the Accessor class for a context manager.
 
-        This cleans up the cursor and database connection.
+        This designed to be used as a context manager and handles
+        the cleanup of the cursor and database connection.
 
         Args:
             ex_type: The exception type.
@@ -60,6 +64,9 @@ class Accessor:
     def show_tables(self) -> List[str]:
         """
         Returns all the tables in the database.
+
+        This is mainly used as a test function to show how to use
+        the underlying API.
 
         Returns:
             The name of all the tables.

@@ -255,11 +255,6 @@ def item_breakdown(location_category: str,
     Returns a list of tuples comprising of the item id, item name, category,
     material, and quantity.
 
-    For example:
-    [
-        ...
-    ]
-
     Args:
         location_category: The type of location.
         location_name: The name of the location.
@@ -269,7 +264,8 @@ def item_breakdown(location_category: str,
     Returns:
         A list of item id, item name, category, material, quantity.
     """
-    if location_category not in {'site_name', 'town', 'county'}:
+    if (location_category not in {'site_name', 'town', 'county'}
+            or end_date < start_date):
         return []
 
     query = """
