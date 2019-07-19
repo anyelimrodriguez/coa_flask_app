@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN make install-deps
+RUN make install-docker-deps
 
 EXPOSE 5000
 
