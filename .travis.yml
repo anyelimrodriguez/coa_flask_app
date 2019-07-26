@@ -1,9 +1,31 @@
 dist: xenial
+
 language: python
+
 python:
   - "3.7"
+
 install:
   - pip install pipenv
+
 script:
   - make install-deps
   - make lint
+  - docker build .
+
+sudo: required
+
+services:
+  - docker
+
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $ACCESSKEYID
+  secret_access_key:
+    secure: $SECRETACCESSKEY
+  region: "us-east-1"
+  app: "coa_flask_app"
+  env: "coa-flask-app-prod"
+  bucket_name: "elasticbeanstalk-us-east-1-495512916465"
+  on:
+    branch: master
