@@ -7,7 +7,6 @@ the application.
 
 
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Union
 
 from flask import jsonify, request, session, url_for, Flask
 from flask_cors import CORS
@@ -15,19 +14,12 @@ from flask_cors import CORS
 from coa_flask_app import contribution, site
 
 
-# Recursive types not yet fully supported.
-#
-# JSONInnerType = Union[int, bool, str, JSON]
-# JSON = Union[Dict[str, JSONInnerType], List[JSONInnerType]]
-#
-JSON = Union[Dict[str, Any], List[Any]]
-
 APP = Flask(__name__)
 CORS(APP)
 
 
 @APP.route('/')
-def index() -> JSON:
+def index():
     """
     Index holds the main page for the REST API.
 
@@ -40,7 +32,7 @@ def index() -> JSON:
 
 
 @APP.route('/locations')
-def all_locations_list() -> JSON:
+def all_locations_list():
     """
     The locations route returns all the locations.
 
@@ -51,7 +43,7 @@ def all_locations_list() -> JSON:
 
 
 @APP.route('/dirtydozen')
-def dirty_dozen() -> JSON:
+def dirty_dozen():
     """
     The dirty dozen route is designed to give the UI the data
     for a dirty dozen.
@@ -87,7 +79,7 @@ def dirty_dozen() -> JSON:
 
 
 @APP.route('/breakdown')
-def breakdown() -> JSON:
+def breakdown():
     """
     The breakdown route is designed to give the UI the data
     for a breakdown.
@@ -123,7 +115,7 @@ def breakdown() -> JSON:
 
 
 @APP.route('/validdaterange')
-def valid_date_range() -> JSON:
+def valid_date_range():
     """
     The valid date range route is designed to give the UI a valid date
     range.
@@ -149,7 +141,7 @@ def valid_date_range() -> JSON:
 
 
 @APP.route('/locationsHierarchy')
-def locations_hierarchy() -> JSON:
+def locations_hierarchy():
     """
     The locations hierarchy route returns the all the locations in a hierarchy.
 
@@ -160,7 +152,7 @@ def locations_hierarchy() -> JSON:
 
 
 @APP.route('/getTLs')
-def get_tls() -> JSON:
+def get_tls():
     """
     The get tls route returns the all the team leads for the input drop down.
 
@@ -171,7 +163,7 @@ def get_tls() -> JSON:
 
 
 @APP.route('/getTrashItems')
-def get_trash_items() -> JSON:
+def get_trash_items():
     """
     The get trash items route returns the all the trash items for the input
     drop down.
@@ -183,7 +175,7 @@ def get_trash_items() -> JSON:
 
 
 @APP.route('/saveUserInfo', methods=['POST'])
-def save_user_info() -> JSON:
+def save_user_info():
     """
     A post request to store user info in the database.
 
@@ -208,7 +200,7 @@ def save_user_info() -> JSON:
 
 
 @APP.route('/insertContribution', methods=['POST'])
-def insert_contribution() -> JSON:
+def insert_contribution():
     """
     A post request to insert a contribution into the database.
 
