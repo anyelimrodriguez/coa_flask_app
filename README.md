@@ -16,9 +16,8 @@ sudo python3.7 -m pip install pipenv
 sudo apt install docker
 ```
 
-2. Setup DB related environment variables (not posted here for security reasons)
-3. Clone down the project
-4. Start server
+2. Setup DB related environment variables (not posted here for security reasons).
+3. Start the server
 
 ```
 make run
