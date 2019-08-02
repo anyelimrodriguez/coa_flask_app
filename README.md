@@ -38,3 +38,12 @@ curl localhost:5000/locations
 # Prod
 curl http://coa-flask-app-prod.us-east-1.elasticbeanstalk.com/locations
 ```
+
+## Inspecting the Database
+
+1. Install MySQL Workbench [here](https://dev.mysql.com/downloads/workbench/)
+2. In MySQL Workbench click on 'MySQL Connections +' to add
+   a connection with AWS RDS.
+3. Enter the hostname, port, username, and password using the
+   same credentials mentioned in the `CONTRIBUTING.md`.
+4. From the 'Home' view, you can click on the connection to inspect the database.

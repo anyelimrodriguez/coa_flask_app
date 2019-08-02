@@ -30,15 +30,18 @@ install-docker-deps:
 
 .PHONY: format
 format:
-	 $(PYTHON) autopep8 -i $(SRC_FILES)
+	@echo "Auto Formatting"
+	@$(PYTHON) autopep8 -i $(SRC_FILES)
 
 .PHONY: fmt
 fmt: format
 
 .PHONY: lint
 lint:
-	 $(PYTHON) mypy --ignore-missing-imports $(SRC_FILES)
-	 $(PYTHON) pylint $(SRC_FILES)
+	@echo "Type Checking"
+	@$(PYTHON) mypy --ignore-missing-imports $(SRC_FILES)
+	@echo "Linting"
+	@$(PYTHON) pylint $(SRC_FILES)
 
 .PHONY: test
 test:
@@ -63,8 +66,10 @@ down:
 
 .PHONY:
 clean:
-	rm -rf "*.pyc" "__pycache__" ".mypy_cache" ".pytest_cache"
+	@echo "Removing temporary files"
+	@rm -rf "*.pyc" "__pycache__" ".mypy_cache" ".pytest_cache"
 
 .PHONY: clean-full
 clean-full: clean
-	pipenv --rm clean
+	@echo "Removing virtual environment"
+	@pipenv --rm clean
