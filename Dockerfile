@@ -1,17 +1,29 @@
 FROM python:3.7-alpine
 
-RUN apk add --no-cache make python3-dev build-base linux-headers pcre-dev
-RUN pip3 install pipenv
+RUN apk add --no-cache \
+    make \
+    python3-dev \
+    build-base \
+    linux-headers \
+    pcre-dev \
+    nginx \
+    supervisor
+
+RUN mkdir -p /run/nginx
+RUN rm /etc/nginx/conf.d/default.conf
+COPY deployment/app.conf /etc/nginx/conf.d
 
 RUN mkdir /app
 WORKDIR /app/
 
-COPY Makefile Pipfile Pipfile.lock /app/
+RUN pip3 install pipenv
+COPY Pipfile Pipfile.lock /app/
+RUN pipenv install --system --deploy --ignore-pipfile
 
-RUN make install-docker-deps
-
+COPY deployment/uwsgi.ini /etc/uwsgi/
+COPY deployment/supervisord.ini /etc/supervisor.d/
 COPY . /app/
 
-EXPOSE 5000
+EXPOSE 80
 
-CMD ["make", "run"]
+CMD /usr/bin/supervisord

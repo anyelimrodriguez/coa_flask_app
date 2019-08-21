@@ -6,15 +6,13 @@ help:
 	@echo "Usage:"
 	@echo "    help:                Prints this screen"
 	@echo "    install-deps:        Installs dependencies in the internal venv"
-	@echo "    install-docker-deps: Installs dependencies for docker"
 	@echo "    format:              Formats the code"
 	@echo "    fmt:                 An alias for format"
 	@echo "    lint:                Lints the code"
 	@echo "    test:                Tests the code"
-	@echo "    run:                 Run the flask application"
-	@echo "    docker-build:        Build the docker containers"
-	@echo "    up:                  Bring up the dockerized version of the app"
-	@echo "    down                 Bring down the dockerized version of the app"
+	@echo "    run:                 Run the development version of the app"
+	@echo "    prod-build:          Build the production version of the app"
+	@echo "    prod-run:            Run the production version of the app"
 	@echo "    clean:               Clean out temporaries"
 	@echo "    clean-full:          Clean out temporaries and the internal venv"
 	@echo ""
@@ -22,11 +20,6 @@ help:
 .PHONY: install-deps
 install-deps:
 	$(PYTHON) pipenv install --dev
-
-
-.PHONY: install-docker-deps
-install-docker-deps:
-	$(PYTHON) pipenv install --system --deploy --ignore-pipfile
 
 .PHONY: format
 format:
@@ -49,20 +42,15 @@ test:
 
 .PHONY: run
 run:
-	FLASK_APP=coa_flask_app FLASK_ENV=development $(PYTHON) uwsgi --ini deployment/uwsgi.ini
+	FLASK_APP=coa_flask_app FLASK_ENV=development $(PYTHON) flask run
 
-.PHONY: docker-build
-docker-build:
-	docker build . -t coa-flask-app
-	cd deployment && docker build . -t coa-nginx
+.PHONY: prod-build
+prod-build:
+	docker build . -t coa-back-end
 
-.PHONY: up
-up: docker-build
-	cd deployment && docker-compose up
-
-.PHONY: down
-down:
-	cd deployment && docker-compose down
+.PHONY: prod-run
+prod-run: prod-build
+	docker run -p 5000:80 -e DB_USERNAME -e DB_PASSWORD -e DB_SERVER -e DB_DATABASE -e DB_PORT coa-back-end
 
 .PHONY:
 clean:
