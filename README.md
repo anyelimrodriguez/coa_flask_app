@@ -23,7 +23,7 @@ sudo apt install docker
 make run
 
 # Alternatively with docker
-make up
+make prod-run
 ```
 
 ## Running the Backend

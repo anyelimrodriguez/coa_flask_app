@@ -2,6 +2,7 @@ FROM python:3.7-alpine
 
 RUN apk add --no-cache \
     make \
+    curl \
     python3-dev \
     build-base \
     linux-headers \
@@ -25,5 +26,7 @@ COPY deployment/supervisord.ini /etc/supervisor.d/
 COPY . /app/
 
 EXPOSE 80
+
+HEALTHCHECK CMD curl --fail http://localhost || exit 1
 
 CMD /usr/bin/supervisord
