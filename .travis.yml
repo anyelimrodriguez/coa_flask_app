@@ -11,7 +11,7 @@ install:
 script:
   - make install-deps
   - make lint
-  - make docker-build
+  - make prod-build
 
 sudo: required
 
